@@ -1,4 +1,4 @@
-🏆 Employee Management System API
+🏆 EmployeeAPI
 
 This is a RESTful Employee Management System API built with ASP.NET Core (.NET 8) using Entity Framework Core for data persistence and JWT-based authentication for securing endpoints.
 🚀 Project Overview
@@ -6,8 +6,9 @@ This is a RESTful Employee Management System API built with ASP.NET Core (.NET 8
 This API allows authenticated users to manage employee data. It includes the following features:
 ✅ JWT-based Authentication and Authorization
 ✅ CRUD Operations for Employee Management
-✅ User Registration and Login
+✅ User Login and JWT Token Generation
 ✅ Protected Endpoints for Employee Operations
+✅ Clean Code Following SOLID Principles
 🏗️ Tech Stack
 
     Backend: .NET 8 (ASP.NET Core)
@@ -18,172 +19,160 @@ This API allows authenticated users to manage employee data. It includes the fol
 
 📂 Project Structure
 
-📦 EmployeeManagementSystem
+📦 EmployeeApi
 ├── 📁 Controllers
-│   ├── AuthController.cs
-│   └── EmployeeController.cs
+│ ├── AuthController.cs
+│ └── EmployeeController.cs
 ├── 📁 Data
-│   ├── AppDbContext.cs
+│ └── AppDbContext.cs
 ├── 📁 Models
-│   ├── Employee.cs
-│   └── User.cs
+│ ├── Employee.cs
+│ └── UserLogin.cs
 ├── 📁 Services
-│   ├── IEmployeeService.cs
-│   ├── EmployeeService.cs
-│   ├── IUserService.cs
-│   └── UserService.cs
+│ ├── IEmployeeService.cs
+│ └── EmployeeService.cs
 ├── 📄 Program.cs
 ├── 📄 appsettings.json
 └── 📄 README.md
-
 ⚙️ Setup Instructions
+
 ✅ Step 1: Clone the Repository
 
-git clone https://github.com/your-username/EmployeeManagementSystem.git
-cd EmployeeManagementSystem
+git clone https://github.com/your-username/EmployeeApi.git
+cd EmployeeApi
 
 ✅ Step 2: Setup the Database
 
     Open SQL Server Management Studio
     Create a new database:
 
-    CREATE DATABASE EmployeeDB;
+CREATE DATABASE EmployeeDB;
 
     Update the connection string in appsettings.json:
 
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=EmployeeDB;Trusted_Connection=True;"
+  "DefaultConnection": "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=EmployeeDB;Integrated Security=True;Trust Server Certificate=True"
 }
 
 ✅ Step 3: Apply Migrations
-
-Run the following commands in the terminal to create database tables:
+Generate the database schema using the following commands:
 
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 
 ✅ Step 4: Run the Application
-
 To start the server:
 
 dotnet run
 
 ✅ Step 5: Open Swagger UI
-
 Open your browser:
 
-https://localhost:7210/swagger/index.html
+https://localhost:7127/swagger/index.html
 
 🔐 Authentication Setup
 
-To protect endpoints using JWT:
-
-    Register a user using /api/auth/register
-    Log in using /api/auth/login to get a token
-    Use the token to authorize other endpoints
+    Register a user using /api/auth/login
+    Log in to get a JWT token
+    Use the token to authorize other endpoints via Swagger
 
 📌 API Endpoints
 🔑 1. Authentication Endpoints
-Method	Route	Description
-POST	/api/auth/register	Register a new user
-POST	/api/auth/login	Authenticate user and generate JWT token
-👥 2. Employee Endpoints
-Method	Route	Description	Authorization
-GET	/api/employee	Get all employees	✅
-GET	/api/employee/{id}	Get employee by ID	✅
-POST	/api/employee	Create a new employee	✅
-PUT	/api/employee/{id}	Update employee by ID	✅
-DELETE	/api/employee/{id}	Delete employee by ID	✅
-💡 Request/Response Examples
-✅ 1. Register a New User
 
-Request
+POST /api/auth/login – Authenticate user and generate JWT token
 
-POST /api/auth/register
-{
-  "username": "john",
-  "password": "pass123"
-}
-
-Response
+    Example Request:
 
 {
-  "message": "User registered successfully!"
+  "username": "rahul",
+  "password": "rahi123"
 }
 
-✅ 2. Login to Get JWT Token
-
-Request
-
-POST /api/auth/login
-{
-  "username": "john",
-  "password": "pass123"
-}
-
-Response
+    Example Response:
 
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 
-✅ 3. Create Employee
+👥 2. Employee Endpoints
 
-Request
+GET /api/employee – Get all employees (Authorization Required)
 
-POST /api/employee
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@example.com",
-  "dateOfBirth": "1990-05-15",
-  "position": "Software Engineer"
-}
+    Example Request:
 
-Response
+curl -X GET "https://localhost:7127/api/employee" -H "Authorization: Bearer <JWT_TOKEN>"
 
-{
-  "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@example.com",
-  "dateOfBirth": "1990-05-15",
-  "position": "Software Engineer"
-}
-
-✅ 4. Get All Employees
-
-Request
-
-GET /api/employee
-
-Response
+    Example Response:
 
 [
   {
     "id": 1,
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "john@example.com",
-    "dateOfBirth": "1990-05-15",
-    "position": "Software Engineer"
+    "firstName": "Rahul",
+    "lastName": "Rathod",
+    "email": "rahul@example.com",
+    "dateOfBirth": "1995-02-25",
+    "position": "Software Engineer",
+    "salary": 75000
   }
 ]
 
-✅ 5. Update Employee
+GET /api/employee/{id} – Get employee by ID (Authorization Required)
 
-Request
+    Example Request:
 
-PUT /api/employee/1
+curl -X GET "https://localhost:7127/api/employee/1" -H "Authorization: Bearer <JWT_TOKEN>"
+
+    Example Response:
+
+{
+  "id": 1,
+  "firstName": "Rahul",
+  "lastName": "Rathod",
+  "email": "rahul@example.com",
+  "dateOfBirth": "1995-02-25",
+  "position": "Software Engineer",
+  "salary": 75000
+}
+
+POST /api/employee – Create a new employee (Authorization Required)
+
+    Example Request:
+
+{
+  "firstName": "Rahul",
+  "lastName": "Rathod",
+  "email": "rahul@example.com",
+  "dateOfBirth": "1995-02-25",
+  "position": "Software Engineer",
+  "salary": 75000
+}
+
+    Example Response:
+
+{
+  "id": 2,
+  "firstName": "Rahul",
+  "lastName": "Rathod",
+  "email": "rahul@example.com",
+  "dateOfBirth": "1995-02-25",
+  "position": "Software Engineer",
+  "salary": 75000
+}
+
+PUT /api/employee/{id} – Update an employee (Authorization Required)
+
+    Example Request:
+
 {
   "firstName": "Johnny",
   "lastName": "Doe",
   "email": "johnny@example.com",
   "dateOfBirth": "1990-05-15",
-  "position": "Senior Engineer"
+  "position": "Senior Engineer",
+  "salary": 90000
 }
 
-Response
+    Example Response:
 
 {
   "id": 1,
@@ -191,16 +180,17 @@ Response
   "lastName": "Doe",
   "email": "johnny@example.com",
   "dateOfBirth": "1990-05-15",
-  "position": "Senior Engineer"
+  "position": "Senior Engineer",
+  "salary": 90000
 }
 
-✅ 6. Delete Employee
+DELETE /api/employee/{id} – Delete an employee (Authorization Required)
 
-Request
+    Example Request:
 
-DELETE /api/employee/1
+curl -X DELETE "https://localhost:7127/api/employee/1" -H "Authorization: Bearer <JWT_TOKEN>"
 
-Response
+    Example Response:
 
 {
   "message": "Employee deleted successfully"
@@ -208,24 +198,34 @@ Response
 
 🛡️ Authentication & Authorization
 
-    JWT-based authentication is used to secure endpoints
-    All EmployeeController endpoints require an authorization token
-    Use Swagger’s Authorize button to add the token
+    JWT-based authentication is used to secure endpoints.
+    All EmployeeController endpoints require a valid JWT token.
+    Use Swagger's "Authorize" button to enter the token.
 
 🚦 Troubleshooting
-Issue	Solution
-401 Unauthorized	Ensure the token is valid and not expired
-500 Internal Server Error	Check database connection and migrations
-Invalid username or password	Ensure correct login credentials
+
+401 Unauthorized:
+
+    Ensure the token is valid and not expired.
+    Verify JWT configuration in appsettings.json.
+
+500 Internal Server Error:
+
+    Check database connection and migrations.
+    Ensure Program.cs contains the correct services.
+
+Invalid Username or Password:
+
+    Ensure login credentials are correct.
+
 🏆 Future Improvements
 
-    Add role-based authorization
-    Implement password hashing for better security
-    Add unit tests for better coverage
-
+✅ Add role-based authorization
+✅ Implement password hashing for better security
+✅ Add unit tests for improved coverage
 🌟 Contributors
 
-👨‍💻 Your Name
+👨‍💻 Rahul Rathod
 📄 License
 
 This project is licensed under the MIT License.
